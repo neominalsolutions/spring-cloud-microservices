@@ -1,4 +1,4 @@
-package com.mertalptekin.sagaservice.saga;
+package com.mertalptekin.sagaservice.service;
 
 import com.mertalptekin.sagaservice.event.*;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 // İşlemin kaldığı yerden devam etmesi için eventleri publish ederek -> süreci kaldığı yerden devam ettirebiliriz.
 
 
+// Servis üzerinden işlem yapınca Consumer KAFKA üzerinden otomatik spring cloud function ile tetiklenir.
+// Consumer üzerinden servise istek yapacağımızda yönledirme yapmak için handlerdan yararlanılır.
 @Service
 public class OrderSagaService {
 
@@ -42,15 +44,23 @@ public class OrderSagaService {
         streamBridge.send("completeOrderEvent-out-0", event);
     }
 
+
+    // 4. Adım sonrası sipariş gerçekleşemediğinde yapılacak olan işlemler.
     // Finish adımı ama Order Completed olmadı
     public void sendRejectOrderEvent(RejectOrderEvent event) {
         System.out.println("sendRejectOrderEvent: " + event);
         streamBridge.send("rejectOrderEvent-out-0", event);
     }
 
+    // 4.Adım olarak ödeme alınamadığı takdirde ürünün stoklarını geri boşa çekme adımı.
+    // Compensate -> Geri alma işlemi
     // Eğer storck reserve ettiksek geri alma compensating transaction
     public void sendReleaseStockEvent(ReleaseStockEvent event) {
         System.out.println("sendReleaseStockEvent: " + event);
         streamBridge.send("releaseStockEvent-out-0", event);
     }
 }
+
+// Akışlar -> Ürün rezerve edildi, ödeme alıntı sipariş başarılı bir şekilde oluştu
+// Ürün rezerve edildi, ama ödeme alınamadı, -> rezerve edilen ürünleri geri al, sipariş iptal et.
+// Ürünün gönderimi sağlandı ama işlem kesintiye uğradı -> Submited adımından sonra tekrar süreci başlat.

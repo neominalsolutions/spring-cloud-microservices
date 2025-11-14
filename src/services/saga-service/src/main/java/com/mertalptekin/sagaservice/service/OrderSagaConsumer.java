@@ -1,4 +1,4 @@
-package com.mertalptekin.sagaservice.saga;
+package com.mertalptekin.sagaservice.service;
 
 
 import com.mertalptekin.sagaservice.event.*;
@@ -17,18 +17,24 @@ import java.util.function.Consumer;
             this.sagaHandler = sagaHandler;
         }
 
+        // 1. Adıma ait Consumer
         @Bean
         public Consumer<OrderSubmittedEvent> orderSubmitEvent() {
             return sagaHandler::handleOrderSubmitted;
         }
 
+        // 2. Adıma ait Consumer
         // Inventory Service Consumer
         @Bean
         public Consumer<CheckStockEvent> checkStockEvent() {
 
-            long availableStock = Math.round(Math.random() * 100);
-
             return  event -> {
+
+                long availableStock = Math.round(Math.random() * 100);
+
+                System.out.println("Ürün Stoğu" + availableStock);
+                System.out.println("Sipariş Adeti " + event.quantity());
+
                 if(event.quantity() > availableStock) {
                     sagaHandler.handleStockNotAvailable(new StockNotAvailableEvent(event.orderId(),event.code()));
 
@@ -39,6 +45,7 @@ import java.util.function.Consumer;
         }
 
         // Payment Service Consumer
+        // 3. Adım olan ödeme adımı gönderildiğinde, tüketilecek olan consumer
         @Bean
         public  Consumer<MakePaymentEvent> makePaymentEvent() {
             return event -> {

@@ -3,10 +3,8 @@ package com.mertalptekin.sagaservice.controller;
 
 
 import com.mertalptekin.sagaservice.event.OrderSubmittedEvent;
-import com.mertalptekin.sagaservice.saga.OrderSagaService;
+import com.mertalptekin.sagaservice.service.OrderSagaService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 // Başarılı Senaryo için -> Submitted -> StockReserved -> PaymentSucceeded -> Completed
 // Başarısız Senaryo için -> Submitted -> StockNotAvailable -> Rejected

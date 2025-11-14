@@ -2,7 +2,22 @@
 server:
   port: 5020
 
+## H2 Database Settings
+
+
+
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/saga_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   application:
     name: saga-service
   cloud:
@@ -10,6 +25,7 @@ spring:
       definition: orderSubmitEvent;checkStockEvent;makePaymentEvent;stockReservedEvent;stockNotAvailableEvent;paidSucceededEvent;paidFailedEvent
     stream:
       bindings:
+        # Send Channel
         orderSubmitEvent-out-0:
           destination: saga_order_submitted
           content-type: application/json
@@ -42,6 +58,7 @@ spring:
           content-type: application/json
 
 
+        # Replay Channel
         orderSubmitEvent-in-0:
           destination: saga_order_submitted
           content-type: application/json
@@ -98,9 +115,9 @@ spring:
               max.in.flight.requests.per.connection: "5"
             # Tek bir TCP bağlantısı üzerinden aynı anda broker’a gönderilen mesaj sayısı
 
-
-logging:
-  pattern:
-    console:
-  level:
-    root: OFF
+#
+#logging:
+#  pattern:
+#    console:
+#  level:
+#    root: OFF
