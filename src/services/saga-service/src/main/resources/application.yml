@@ -115,9 +115,9 @@ spring:
               max.in.flight.requests.per.connection: "5"
             # Tek bir TCP bağlantısı üzerinden aynı anda broker’a gönderilen mesaj sayısı
 
-#
-#logging:
-#  pattern:
-#    console:
-#  level:
-#    root: OFF
+
+logging:
+  pattern:
+    console:
+  level:
+    root: OFF
